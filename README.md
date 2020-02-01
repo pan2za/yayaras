@@ -1,4 +1,4 @@
-# YAYARAS
+# YAYARAS (Yet Another YARA Scanner)
 
 YAYARAS (Yet Another YARA Scanner) enables malware researchers to triage samples using OSINT quickly.
 
