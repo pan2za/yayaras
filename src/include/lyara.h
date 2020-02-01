@@ -43,11 +43,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 struct lyara{
   YR_COMPILER *compiler;
   YR_RULES *rules;
+  char *pFileName;
 };
 
 int lyara_scan_callback(int message, void *message_data, void* user_data){
   if (message == CALLBACK_MSG_RULE_MATCHING){
-    printf("[*] match\n");
+    printf("[*] match %s\n", ((struct lyara *)user_data)->pFileName);
     printf("    id   : %s\n", ((struct YR_RULE *)message_data)->identifier);
     printf("    tags :");
     const char *tag;
@@ -88,11 +89,12 @@ void lyara_scan_file(char *pFileName, struct lyara *lyara_t){
     lyara_cleanup(lyara_t);
     exit(EXIT_FAILURE);
   }
+  lyara_t->pFileName = pFileName;
   yr_rules_scan_file(lyara_t->rules,
                      pFileName,
                      SCAN_FLAGS_FAST_MODE,
                      lyara_scan_callback,
-                     NULL,
+                     lyara_t,
                      0);
 }
 
@@ -173,7 +175,8 @@ bool lyara_compile_by_zip_index(unsigned long iZipIndex,
 
 bool lyara_compile_with_zip_in_memory(void *pZipFile,
                                       unsigned long iZipFileSize,
-                                      struct lyara *lyara_t, bool bVerbose){
+                                      struct lyara *lyara_t,
+                                      bool bVerbose){
   bool result = false;
   struct lzip lzip_t;
   lzip_init(&lzip_t);
