@@ -93,7 +93,7 @@ void lzip_cleanup(struct lzip *lzip_t){
   lzip_t->iZipSize = 0;
   lzip_t->iEntries = 0;
   lzip_cleanup_zip_t(lzip_t);
-  zip_fclose(lzip_t->zip_file_t);
+  lzip_cleanup_zip_file_t(lzip_t);
 }
 
 void _lzip_set_izipsize(unsigned long iZipSize,

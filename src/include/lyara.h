@@ -159,27 +159,32 @@ bool lyara_compile_by_zip_index(unsigned long iZipIndex,
       yr_compiler_add_string(lyara_t->compiler,
                              (char *)lzip_extracted_t.pExtractedFile,
                              namespace_uuid);
-    } else{
-      if (bVerbose == true){
-        printf("[x] %s\n", lzip_t->zip_stat_t.name);
-      }
+      lzip_cleanup_extractedfile(&lzip_extracted_t);
+      return true;
+    }
+    if (bVerbose == true){
+      printf("[x] %s\n", lzip_t->zip_stat_t.name);
     }
     lzip_cleanup_extractedfile(&lzip_extracted_t);
-    return true;
+    return false;
   }
   return false;
 }
 
-void lyara_compile_with_zip_in_memory(void *pZipFile,
-                                   unsigned long iZipFileSize,
+bool lyara_compile_with_zip_in_memory(void *pZipFile,
+                                      unsigned long iZipFileSize,
                                       struct lyara *lyara_t, bool bVerbose){
+  bool result = false;
   struct lzip lzip_t;
   lzip_init(&lzip_t);
   lzip_open_from_memory(pZipFile, iZipFileSize, &lzip_t);
   for (unsigned long i = 0; i < lzip_get_ientries(&lzip_t); i++){
-    lyara_compile_by_zip_index(i, &lzip_t, lyara_t, bVerbose);
+    if (lyara_compile_by_zip_index(i, &lzip_t, lyara_t, bVerbose) == true){
+      result = true;
+    }
   }
   lzip_cleanup(&lzip_t);
+  return result;
 }
 
 #endif

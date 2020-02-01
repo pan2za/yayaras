@@ -141,11 +141,12 @@ bool args_module_scan_file_using_zip_file(struct args *args_t){
     void *pZipFile = file_read_to_memory(&file_t);
     struct lyara lyara_t;
     lyara_init(&lyara_t);
-    lyara_compile_with_zip_in_memory(pZipFile, file_get_isize(&file_t), &lyara_t, args_t->bVerbose);
-    if (args_t->bVerbose == true){
-      printf("[*] scanning %s\n", args_t->pScan);
+    if (lyara_compile_with_zip_in_memory(pZipFile, file_get_isize(&file_t), &lyara_t, args_t->bVerbose) == true){
+      if (args_t->bVerbose == true){
+        printf("[*] scanning %s\n", args_t->pScan);
+      }
+      lyara_scan_file(args_t->pScan, &lyara_t);
     }
-    lyara_scan_file(args_t->pScan, &lyara_t);
     lyara_cleanup(&lyara_t);
     args_t->bExecuted = true;
     if (args_t->bVerbose == true){
