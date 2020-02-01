@@ -2,6 +2,8 @@
 
 YAYARAS (Yet Another YARA Scanner) enables malware researchers to triage samples using OSINT quickly.
 
+![yayaras](img/output.svg)
+
 # Current Features
 - Scan single file using ZIP files containing YARA signatures
 - Scan single file using single YARA signature file
