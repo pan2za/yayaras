@@ -41,90 +41,24 @@ struct file{
   void *pData;
 };
 
-void file_init(struct file *file_t){
-  file_t->pFileName = NULL;
-  file_t->iSize = 0;
-  file_t->pData = NULL;
-}
+extern void file_init(struct file *file_t);
 
-const char *_file_get_extension(const char *pFileName){
-  char *ext = strrchr(pFileName, '.');
-  if (!ext){
-    return NULL;
-  }
-  return ext;
-}
+extern const char *_file_get_extension(const char *pFileName);
 
-void _file_debug_stats(struct file *file_t){
-  printf("pFileName: %p\n", file_t->pFileName);
-  printf("iSize    : %d\n", (int)file_t->iSize);
-  printf("pData    : %p\n", file_t->pData);
-}
+extern void _file_debug_stats(struct file *file_t);
 
-void file_set_pfilename(char *pFileName, struct file *file_t){
-  file_t->pFileName = pFileName;
-}
+extern void file_set_pfilename(char *pFileName, struct file *file_t);
+extern void file_set_isize(unsigned long iSize, struct file *file_t);
 
-void file_set_isize(unsigned long iSize, struct file *file_t){
-  file_t->iSize = iSize;
-}
+extern unsigned long file_get_isize(struct file *file_t);
+extern void file_set_pdata(void *pData, struct file *file_t);
 
-unsigned long file_get_isize(struct file *file_t){
-  return file_t->iSize;
-}
+extern void file_cleanup(struct file *file_t);
 
-void file_set_pdata(void *pData, struct file *file_t){
-  file_t->pData = pData;
-}
+extern unsigned long _file_get_size_fd(FILE *fp);
 
-void file_cleanup(struct file *file_t){
-  if (file_t->pData != NULL){
-    free(file_t->pData);
-  }
-  file_t->iSize = 0;
-  file_t->pFileName = NULL;
-}
+extern unsigned long file_get_size(struct file *file_t);
 
-unsigned long _file_get_size_fd(FILE *fp){
-  int prev = ftell(fp);
-  if (fseek(fp, 0L, SEEK_END) != 0){
-    fprintf(stderr, "%s\n", strerror(errno));
-    return 0;
-  }
-  int sz = ftell(fp);
-  if (fseek(fp, prev, SEEK_SET) != 0){
-    fprintf(stderr, "%s\n", strerror(errno));
-    return 0;
-  }
-  return sz;
-}
-
-unsigned long file_get_size(struct file *file_t){
-  FILE *fp = fopen(file_t->pFileName, "rb");
-  if (fp == NULL){
-    fprintf(stderr, "%s\n", strerror(errno));
-    return 0;
-  }
-  file_t->iSize = _file_get_size_fd(fp);
-  return file_t->iSize;
-}
-
-void *file_read_to_memory(struct file *file_t){
-  if (file_t->pFileName == NULL){
-    fprintf(stderr, "pFileName is undefined\n");
-    return NULL;
-  }
-  FILE *fp = fopen(file_t->pFileName, "rb");
-  if (fp == NULL){
-    fprintf(stderr, "%s\n", strerror(errno));
-    return NULL;
-  }
-  file_t->iSize = _file_get_size_fd(fp);
-  file_t->pData = malloc(file_t->iSize);
-  memset(file_t->pData, 0, file_t->iSize);
-  fread(file_t->pData, file_t->iSize, 1, fp);
-  fclose(fp);
-  return file_t->pData;
-}
+extern void *file_read_to_memory(struct file *file_t);
 
 #endif

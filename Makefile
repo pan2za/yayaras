@@ -15,8 +15,11 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS ?= $(INC_FLAGS) -MMD -MP
 
+#CFLAGS = -DNDEBUG
+CFLAGS = -g
+
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CC) -DNDEBUG -v $(OBJS) -o $@ $(LDFLAGS)
+	$(CC) -v $(OBJS) -o $@ $(LDFLAGS)
 
 # assembly
 $(BUILD_DIR)/%.s.o: %.s
@@ -26,12 +29,12 @@ $(BUILD_DIR)/%.s.o: %.s
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) -DNDEBUG -v $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) -v $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # c++ source
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	$(MKDIR_P) $(dir $@)
-	$(CXX) -DNDEBUG -v $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) -v $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: clean
 

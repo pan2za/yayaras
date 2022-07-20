@@ -44,99 +44,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <magic.h>
 
-bool common_get_magic_file(char *pFileName,
+extern bool common_get_magic_file(char *pFileName,
                            char *pResult,
-                           unsigned int iResultSize){
-  const char *magic;
-  magic_t magic_cookie;
-  magic_cookie = magic_open(MAGIC_MIME);
-  if (magic_cookie == NULL) {
-    fprintf(stderr, "[x] libmagic init failure\n");
-    return false;
-  }
-  if (magic_load(magic_cookie, NULL) != 0) {
-    fprintf(stderr,
-            "[x] libmagic database failure - %s\n",
-            magic_error(magic_cookie));
-    magic_close(magic_cookie);
-    return false;
-  }
-  magic = magic_file(magic_cookie, pFileName);
-  if (strlen(magic) > iResultSize){
-    fprintf(stderr, "[x] libmagic result size buffer too small\n");
-    magic_close(magic_cookie);
-    return false;
-  }
-  memcpy(pResult, magic, strlen(magic));
-  magic_close(magic_cookie);
-  return true;
-}
+                           unsigned int iResultSize);
 
-bool common_get_magic_buffer(void *pBuffer,
+extern bool common_get_magic_buffer(void *pBuffer,
                              unsigned long iBufferSize,
-                             const char *magic){
-  magic_t magic_cookie;
-  magic_cookie = magic_open(MAGIC_MIME);
-  if (magic_cookie == NULL) {
-    fprintf(stderr, "[x] libmagic init failure\n");
-    return false;
-  }
-  if (magic_load(magic_cookie, NULL) != 0) {
-    fprintf(stderr,
-            "[x] libmagic database failure - %s\n",
-            magic_error(magic_cookie));
-    magic_close(magic_cookie);
-    return false;
-  }
-  magic = magic_buffer(magic_cookie, pBuffer, iBufferSize);
-  magic_close(magic_cookie);
-  return true;
-}
+                             const char *magic);
 
-bool common_string_starts_with(const char *a,
-                               const char *b){
-  if(strncmp(a, b, strlen(b)) == 0){
-    return true;
-  }
-  return false;
-}
+extern bool common_string_starts_with(const char *a,
+                               const char *b);
 
-bool common_is_zip_file(char *pFileName){
-  char magic[COMMON_MAGIC_RESULT_SIZE];
-  common_get_magic_file(pFileName, magic, COMMON_MAGIC_RESULT_SIZE);
-  if (common_string_starts_with(magic, "application/zip") == true){
-    return true;
-  }
-  return false;
-}
+extern bool common_is_zip_file(char *pFileName);
 
-bool common_is_folder(char *pFolder){
-  DIR* dir = opendir(pFolder);
-  if (dir == NULL){
-    return false;
-  }
-  return true;
-}
+extern bool common_is_folder(char *pFolder);
 
-bool common_is_file_read(char *pFile){
-  if( access(pFile, R_OK) != -1 ) {
-    return true;
-  }
-  return false;
-}
+extern bool common_is_file_read(char *pFile);
 
-bool common_is_file_write(char *pFile){
-  if( access(pFile, W_OK) != -1 ) {
-    return true;
-  }
-  return false;
-}
+extern bool common_is_file_write(char *pFile);
 
-bool common_get_uuid(char *uuid){
-  uuid_t id;
-  uuid_generate(id);
-  uuid_unparse(id, uuid);
-  return true;
-}
+extern bool common_get_uuid(char *uuid);
 
 #endif
