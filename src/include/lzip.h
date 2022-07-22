@@ -49,6 +49,7 @@ struct lzip{
 struct lzip_extracted{
   void *pExtractedFile;
   unsigned long iExtractedFileSize;
+  char name[1024];
 };
 
 extern void lzip_init(struct lzip *lzip_t);

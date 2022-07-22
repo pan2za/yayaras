@@ -41,6 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "include/log.h"
 
 int main(int argc, char **argv){
+
+  test_yara_compile("/tmp/rules/malware/MALW_Eicar.yar", true);
   struct args args_t;
   args_init(&args_t);
   args_parse(argc, argv, &args_t);

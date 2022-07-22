@@ -40,9 +40,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "file.h"
 #include "common.h"
 
+#define MAX_COMPILER_NUM 200
 struct lyara{
-  YR_COMPILER *compiler;
-  YR_RULES *rules;
+  YR_COMPILER *compiler[MAX_COMPILER_NUM];
+  YR_RULES *rules[MAX_COMPILER_NUM];
   char *pFileName;
 };
 
@@ -58,7 +59,7 @@ extern int lyara_check_string(char *pRuleString);
 extern bool lyara_check_file(char *pFileName);
 
 
-extern bool lyara_compile_by_yara_file(char *pFileName, struct lyara  *lyara_t, bool bVerbose);
+extern bool lyara_compile_by_yara_file(char *pFileName, struct lyara  *lyara_t, unsigned long idx, bool bVerbose);
 
 extern bool lyara_compile_by_zip_index(unsigned long iZipIndex,
                                 struct lzip *lzip_t,
@@ -68,5 +69,12 @@ extern bool lyara_compile_with_zip_in_memory(void *pZipFile,
                                       unsigned long iZipFileSize,
                                       struct lyara *lyara_t,
                                       bool bVerbose);
+                                    
+extern void *lzip_extract_index_to_file(unsigned long iIndex,
+                                   struct lzip *lzip_t,
+                                   struct lzip_extracted *lzip_extracted_t);
+extern void *lzip_extract_index_name(unsigned long iIndex,
+                                   struct lzip *lzip_t,
+                                   struct lzip_extracted *lzip_extracted_t);
 
 #endif

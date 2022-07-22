@@ -34,6 +34,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <zip.h>
 #include <errno.h>
 #include "include/lzip.h"
+#include "include/mkdirp.h"
+#include <sys/types.h>
+
+#include <sys/stat.h>
+
+#include <fcntl.h>
 
 void lzip_init(struct lzip *lzip_t){
   lzip_t->zip_file_t = NULL;
@@ -127,4 +133,52 @@ void *lzip_extract_index_to_memory(unsigned long iIndex,
             lzip_extracted_t->pExtractedFile,
             lzip_t->zip_stat_t.size - 1);
   return lzip_extracted_t->pExtractedFile;
+}
+/*返回str1中最后一次出现str2的位置(下标),不存在返回-1*/  
+int lastIndexOf(char *str1,char *str2)  
+{  
+    char *p=str1;  
+    int i=0,len=strlen(str2);  
+    p=strstr(str1,str2);  
+    if(p==NULL)return -1;  
+    while(p!=NULL)  
+    {  
+        for(;str1!=p;str1++)i++;  
+        p=p+len;  
+        p=strstr(p,str2);  
+    }  
+    return i;  
+}  
+void *lzip_extract_index_to_file(unsigned long iIndex,
+                                   struct lzip *lzip_t,
+                                   struct lzip_extracted *lzip_extracted_t){
+  lzip_stat_index(iIndex, lzip_t);
+  lzip_extracted_t->iExtractedFileSize = lzip_t->zip_stat_t.size;
+  lzip_t->zip_file_t = zip_fopen_index(lzip_t->zip_t, iIndex, 0);
+  lzip_extracted_t->pExtractedFile = malloc(lzip_t->zip_stat_t.size);
+  memset(lzip_extracted_t->pExtractedFile, 0, lzip_t->zip_stat_t.size);
+  zip_fread(lzip_t->zip_file_t,
+            lzip_extracted_t->pExtractedFile,
+            lzip_t->zip_stat_t.size - 1);
+  snprintf(lzip_extracted_t->name, 1024, "/tmp/rules/%s", lzip_t->zip_stat_t.name);
+  char path[1024]={0};
+  int n = lastIndexOf(lzip_extracted_t->name, "/");
+  if(-1 != n){
+    memcpy(path, lzip_extracted_t->name, n);
+    mkdirp(path, 0x0777);
+  }
+
+  FILE *f = fopen(lzip_extracted_t->name, "wb");
+  fwrite(lzip_extracted_t->pExtractedFile, 1, lzip_t->zip_stat_t.size - 1, f );
+  fclose(f);
+  //WARNING: FREE AT cleanup:
+  //free(lzip_extracted_t->pExtractedFile);
+}
+
+
+void *lzip_extract_index_name(unsigned long iIndex,
+                                   struct lzip *lzip_t,
+                                   struct lzip_extracted *lzip_extracted_t){
+  lzip_stat_index(iIndex, lzip_t);
+  snprintf(lzip_extracted_t->name, 1024, "/tmp/rules/%s", lzip_t->zip_stat_t.name);
 }
